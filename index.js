@@ -1,34 +1,18 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 
+// Middleware pour parser le JSON
+app.use(cors());
 app.use(express.json());
 
-let users = [];
+// Importer les routes
+const userRoutes = require('./user.routes'); //j'ai modifié les chemins pour les tests 
+app.use('/api/users', userRoutes);
 
-app.post('/register', (req, res) => {
-  const { name, email, password } = req.body;
-
-  const userExists = users.find(user => user.email === email);
-  if (userExists) {
-    return res.status(400).json({ message: "Email déjà utilisé" });
-  }
-
-  users.push({ name, email, password });
-  res.status(201).json({ message: "Inscription réussie" });
-});
-
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  const user = users.find(user => user.email === email && user.password === password);
-  if (!user) {
-    return res.status(401).json({ message: "Identifiants incorrects" });
-  }
-
-  res.status(200).json({ message: `Bienvenue ${user.name} !` });
-});
-
+// Démarrer le serveur
 app.listen(port, () => {
-  console.log(`API démarrée sur http://localhost:${port}`);
+  console.log(`Serveur démarré sur http://localhost:${port}`);
 });

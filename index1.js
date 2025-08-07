@@ -36,7 +36,10 @@ app.listen(port, () => {
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+
+const fs = require('fs');
+const https = require('https');
+const port = 443;
 
 // Middleware pour parser le JSON
 app.use(cors());
@@ -46,7 +49,20 @@ app.use(express.json());
 const userRoutes = require('./user.routes'); //j'ai modifié les chemins pour les tests 
 app.use('/api/users', userRoutes);
 
-// Démarrer le serveur
+// Ajout des fichiers SSL
+const sslFiles = {
+  key: fs.readFileSync('generated-cert/key.pem'),
+  certif: fs.readFileSync('generated-cert/certif.pem')
+};
+
+// Démarrer le serveur 
+/*
 app.listen(port, () => {
   console.log(`Serveur démarré sur http://localhost:${port}`);
+});
+*/
+
+// Demarrage du serveur HTTPS
+https.createServer(sslFiles, app).listen(port, () => {
+  console.log(`Serveur HTTPS lancé sur https://localhost:${port}`)
 });
